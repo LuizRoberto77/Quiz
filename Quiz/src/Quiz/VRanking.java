@@ -1,0 +1,306 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package Quiz;
+
+import ClasseDados.Conexao;
+import static ClasseDados.Conexao.con;
+import ClasseDados.usuario;
+import com.mysql.jdbc.PreparedStatement;
+import java.awt.Color;
+import java.awt.Component;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
+/**
+ *
+ * @author Roberto
+ */
+public class VRanking extends javax.swing.JFrame {
+
+    /**
+     * Creates new form TesteJRender2
+     */
+    public VRanking() {
+        initComponents();
+        //↓Coloca o nick do usuario na txtNick
+        txtNick.setText(usuario.getNick());
+        Conexao dadosBD = new Conexao();
+        //Cria default Table da Tabela
+        DefaultTableModel modelo = (DefaultTableModel) Tabela.getModel();
+        modelo.setNumRows(0);
+        dadosBD.getConexao();
+        PreparedStatement st;
+        ResultSet rs;
+        try {
+            //↓consulta dados de duas tabelas.O nickname da tabela usuario pelo idusuario da 
+            //tabela Pontuação(chave estrangeira), os pontos e a data.
+            //Ordenado pela ordem de pontos decrescente, a data mais antiga para a mais nova, e limitado as 10 primeiras linhas  
+            st = (PreparedStatement) con.prepareStatement("SELECT U.nickname, P.pontos, P.data "
+                + "FROM pontuacao P LEFT JOIN usuario U ON U.idusuario = P.idusuario ORDER BY pontos DESC, data ASC limit 10 ");
+            rs = st.executeQuery();
+            while (rs.next()) {//Adiciona cada linha do banco na tabela
+                modelo.addRow(new Object[]{rs.getString("U.nickname"), rs.getInt("P.pontos"), rs.getString("P.data")});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VRanking.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        //define Tabela com defaultRenderer
+        Tabela.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+                super.getTableCellRendererComponent(table, value, isSelected,
+                    hasFocus, row, column);
+                Object text = table.getValueAt(row, 0);
+                //Define a cor Dourada na primeira linha
+                if (row == 0) {
+                    setBackground(Color.YELLOW);
+                }
+                //Define a cor prata na segunda linha
+                if (row == 1) {
+                    setBackground(Color.LIGHT_GRAY);
+                }
+                //Define a cor Bronze na terceira linha
+                if (row == 2) {
+                    Color Brown = new Color(205,127,50);
+                    setBackground(Color.getColor("Marrow", Brown));
+                }
+                //se não for nenhuma das mencionadas acima o fundo fica nulo.
+                if(row != 2 && row != 1 && row != 0){
+                    setBackground(null);
+                }
+                //se tiver alguma linha com o nick do usuario Define a cor azul de fonte a essa linha
+                if(text.equals(usuario.getNick())){
+                    setForeground(Color.blue);
+
+                }
+                //se não ela na cor preta padrão
+                else{
+                    setForeground(Color.BLACK);
+                }
+                return this;
+            }
+        });
+        //Cria default Table da Tabela2
+        DefaultTableModel modelo2 = (DefaultTableModel) Tabela2.getModel();
+        modelo2.setNumRows(0);
+        PreparedStatement st2;
+        ResultSet rs2;
+        try {
+            //a mesma coisa do de cima mas com a diferença que so vai ser mostrado os 3 melhores resultados do usuario
+            st2 = (PreparedStatement) con.prepareStatement("SELECT U.nickname, P.pontos, P.data "
+                + "FROM pontuacao P LEFT JOIN usuario U ON U.idusuario = P.idusuario where nickname = '"+usuario.getNick()+"' ORDER BY pontos DESC, data ASC limit 3 ");
+            rs2 = st2.executeQuery();
+            while (rs2.next()) {//Adiciona cada linha do banco na tabela
+                modelo2.addRow(new Object[]{rs2.getString("U.nickname"), rs2.getInt("P.pontos"), rs2.getString("P.data")});
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VRanking.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        dadosBD.FechaConexao();
+    }
+
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
+     */
+    @SuppressWarnings("unchecked")
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
+
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Tabela2 = new javax.swing.JTable();
+        btnVoltar = new javax.swing.JButton();
+        txtNick = new javax.swing.JLabel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        Tabela = new javax.swing.JTable();
+        lbLMD3 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        Tabela2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Você", "Pontos", "Data"
+            }
+        ));
+        Tabela2.setEnabled(false);
+        jScrollPane3.setViewportView(Tabela2);
+
+        btnVoltar.setText("Voltar");
+        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVoltarActionPerformed(evt);
+            }
+        });
+
+        txtNick.setText("Nick");
+
+        Tabela.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Usuario", "Pontos", "Data"
+            }
+        ));
+        Tabela.setEnabled(false);
+        jScrollPane4.setViewportView(Tabela);
+
+        lbLMD3.setText("Suas três melhores pontuações:");
+
+        jLabel1.setText("Ranking geral");
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtNick))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(btnVoltar)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 834, Short.MAX_VALUE)))
+                .addContainerGap())
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(lbLMD3)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 834, Short.MAX_VALUE)
+                    .addContainerGap()))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(9, 9, 9)
+                        .addComponent(txtNick))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(22, 22, 22)
+                        .addComponent(jLabel1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 220, Short.MAX_VALUE)
+                .addComponent(lbLMD3)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(28, 28, 28)
+                .addComponent(btnVoltar)
+                .addGap(6, 6, 6))
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(44, 44, 44)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 187, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addContainerGap(175, Short.MAX_VALUE)))
+        );
+
+        pack();
+        setLocationRelativeTo(null);
+    }// </editor-fold>//GEN-END:initComponents
+
+    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
+        // TODO add your handling code here:
+        Conexao dadosBD = new Conexao();
+        usuario u = new usuario();
+        try {
+        dadosBD.getConexao(); 
+        PreparedStatement st;
+            ResultSet rs;
+            st = (PreparedStatement) con.prepareStatement("select tipo from usuario where nickname='"+u.getNick()+"'");
+            rs = st.executeQuery();
+            while(rs.next()){
+                if(rs.getString("tipo").equals("1")){
+                    this.dispose();
+                    new PrincipalA().setVisible(true);
+                }else if(rs.getString("tipo").equals("2")){
+                    this.dispose();
+                    new PrincipalJ().setVisible(true);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(VRanking.class.getName()).log(Level.SEVERE, null, ex);
+        }     
+         dadosBD.FechaConexao();
+    }//GEN-LAST:event_btnVoltarActionPerformed
+    
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         */
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(VRanking.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(VRanking.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(VRanking.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(VRanking.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        //</editor-fold>
+        //</editor-fold>
+
+        /* Create and display the form */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new VRanking().setVisible(true);
+            }
+        });
+    }
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JTable Tabela;
+    private javax.swing.JTable Tabela2;
+    private javax.swing.JButton btnVoltar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JLabel lbLMD3;
+    private javax.swing.JLabel txtNick;
+    // End of variables declaration//GEN-END:variables
+}
